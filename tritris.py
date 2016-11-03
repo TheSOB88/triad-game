@@ -13,6 +13,15 @@ cGrid = Color(0x80,0x80,0x80)
 cGameBG = Color(0xF8,0xF8,0xEC)
 cGameGrid = Color(0x40,0x40,0x40)
 cBlack = Color('black')
+colors = \
+  [ Color(0x22,0x10,0x00),
+    Color(0xA0,0x60,0xC0),
+    Color(0xC0,0x80,0x80),
+    Color(0xC0,0xC0,0x68),
+    Color(0x30,0x40,0x34),
+    Color(0x80,0x80,0x7A),
+    Color(0xFF,0xD0,0xC0),
+    Color(0x20,0xA0,0x20) ]
 
 #0 is empty, 1 is top left tri, next 3 are clockwise rotations, 
 #5 is 1+3, 6 is 2+4
@@ -20,8 +29,10 @@ class Piece:
     matrix = [[0]*2]*2
     x, y = 0, 0
     type = None
-    def __init__( self, type, x = None, y = None ):
+    color = cGameGrid
+    def __init__( self, type, x = None, y = None, color = cGameGrid ):
         self.type = type
+        self.color = color
         if type == 1:
             self.matrix = [ [ 4, 0 ],
                             [ 5, 0 ] ]
@@ -83,10 +94,10 @@ class Piece:
             for i in range(0, 2):
                 for j in range(0, 2):
                     triType = self.matrix[j][i]
-                    if triType in range(1,4):
-                        self.matrix[j][i] = triType + 1
-                    elif triType == 4:
-                        self.matrix[j][i] = 1
+                    if triType in range(2,5):
+                        self.matrix[j][i] = triType - 1
+                    elif triType == 1:
+                        self.matrix[j][i] = 4
                     elif triType == 5:
                         self.matrix[j][i] = 6
                     elif triType == 6:
@@ -97,10 +108,10 @@ class Piece:
                         Error()
             #rotate triangle arrangement
             temp = self.matrix[0][0]
-            self.matrix[0][0] = self.matrix[1][0]
-            self.matrix[1][0] = self.matrix[1][1]
-            self.matrix[1][1] = self.matrix[0][1]
-            self.matrix[0][1] = temp
+            self.matrix[0][0] = self.matrix[0][1]
+            self.matrix[0][1] = self.matrix[1][1]
+            self.matrix[1][1] = self.matrix[1][0]
+            self.matrix[1][0] = temp
         
         #move tiles to the top/left
         if self.matrix[0][0] == 0:
@@ -153,7 +164,7 @@ class Piece:
     def draw( self, surface ):
         for i in range(0, 2):
             for j in range(0, 2):
-                Piece.drawTriangle( surface, cGameGrid, self.matrix[i][j], self.x + j, self.y + i )
+                Piece.drawTriangle( surface, self.color, self.matrix[i][j], self.x + j, self.y + i )
     
 class Board:
     matrix = [[0]*12]*8
@@ -190,16 +201,19 @@ def main():
     boardX, boardY = boardCorner
     
     #instantiate demo pieces
-    pieces = [None]*8
+    demoPieces = [None]*8
     for i in range(0, 8):
-        pieces[i] = Piece( i + 1, (i % 4 ) * 2, int( i/4 ) * 2 )
+        demoPieces[i] = Piece( i + 1, (i % 4 ) * 2, int( i/4 ) * 2, colors[i] )
     ticks = -1
+    demoClockwise = True
     
     while True:
         #get input
         for event in pygame.event.get():
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
-                    return
+                return
+            elif event.type == KEYDOWN:
+                demoClockwise = not demoClockwise
         keystate = pygame.key.get_pressed()
         
         screen.fill( Color(0,0,0) )
@@ -219,11 +233,11 @@ def main():
         ticks += 1        
         if ticks == 30:
             for i in range(0, 8):
-                pieces[i].rotate()
+                demoPieces[i].rotate( demoClockwise )
             ticks = 0
         
         for i in range(0, 8):
-            pieces[i].draw( board )
+            demoPieces[i].draw( board )
         
         screen.blit( board, boardCorner )
         
