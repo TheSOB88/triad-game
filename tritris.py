@@ -14,8 +14,8 @@ cGameBG = Color(0xF8,0xF8,0xEC)
 cGameGrid = Color(0x40,0x40,0x40)
 cBlack = Color('black')
 
-#0 is empty, 1 is top left triangle, 2 is bottom right triangle, 3 is both,
-#4 is top right triangle, 5 is bottom left triangle, 6 is both
+#0 is empty, 1 is top left tri, next 3 are clockwise rotations, 
+#5 is 1+3, 6 is 2+4
 class Piece:
     matrix = [[0]*2]*2
     x, y = 0, 0
@@ -23,29 +23,29 @@ class Piece:
     def __init__( self, type, x = None, y = None ):
         self.type = type
         if type == 1:
-            self.matrix = [ [ 5, 0 ],
-                       [ 3, 0 ] ]
+            self.matrix = [ [ 4, 0 ],
+                            [ 5, 0 ] ]
         elif type == 2:
-            self.matrix = [ [ 5, 0 ],
-                       [ 6, 0 ] ]
+            self.matrix = [ [ 4, 0 ],
+                            [ 6, 0 ] ]
         elif type == 3:
-            self.matrix = [ [ 2, 0 ],
-                       [ 3, 0 ] ]
+            self.matrix = [ [ 3, 0 ],
+                            [ 5, 0 ] ]
         elif type == 4:
-            self.matrix = [ [ 2, 0 ],
-                       [ 6, 0 ] ]
+            self.matrix = [ [ 3, 0 ],
+                            [ 6, 0 ] ]
         elif type == 5:
-            self.matrix = [ [ 5, 0 ],
-                       [ 4, 5 ] ]
+            self.matrix = [ [ 4, 0 ],
+                            [ 2, 4 ] ]
         elif type == 6:
-            self.matrix = [ [ 5, 0 ],
-                       [ 4, 1 ] ]
+            self.matrix = [ [ 4, 0 ],
+                            [ 2, 1 ] ]
         elif type == 7:
-            self.matrix = [ [ 2, 0 ],
-                       [ 4, 5 ] ]
+            self.matrix = [ [ 3, 0 ],
+                            [ 2, 4 ] ]
         elif type == 8:
-            self.matrix = [ [ 2, 0 ],
-                       [ 4, 1 ] ]
+            self.matrix = [ [ 3, 0 ],
+                            [ 2, 1 ] ]
         else:
             Error()
             
@@ -55,7 +55,67 @@ class Piece:
             self.y = y
         
     def rotate( self, clockwise = True ):
-        pass
+        if clockwise:
+            #rotate triangles individually
+            for i in range(0, 2):
+                for j in range(0, 2):
+                    triType = self.matrix[j][i]
+                    if triType in range(1,4):
+                        self.matrix[j][i] = triType + 1
+                    elif triType == 4:
+                        self.matrix[j][i] = 1
+                    elif triType == 5:
+                        self.matrix[j][i] = 6
+                    elif triType == 6:
+                        self.matrix[j][i] = 5
+                    elif triType == 0:
+                        pass
+                    else:
+                        Error()
+            #rotate triangle arrangement
+            temp = self.matrix[0][0]
+            self.matrix[0][0] = self.matrix[1][0]
+            self.matrix[1][0] = self.matrix[1][1]
+            self.matrix[1][1] = self.matrix[0][1]
+            self.matrix[0][1] = temp
+        else:
+            #rotate triangles individually
+            for i in range(0, 2):
+                for j in range(0, 2):
+                    triType = self.matrix[j][i]
+                    if triType in range(1,4):
+                        self.matrix[j][i] = triType + 1
+                    elif triType == 4:
+                        self.matrix[j][i] = 1
+                    elif triType == 5:
+                        self.matrix[j][i] = 6
+                    elif triType == 6:
+                        self.matrix[j][i] = 5
+                    elif triType == 0:
+                        pass
+                    else:
+                        Error()
+            #rotate triangle arrangement
+            temp = self.matrix[0][0]
+            self.matrix[0][0] = self.matrix[1][0]
+            self.matrix[1][0] = self.matrix[1][1]
+            self.matrix[1][1] = self.matrix[0][1]
+            self.matrix[0][1] = temp
+        
+        #move tiles to the top/left
+        if self.matrix[0][0] == 0:
+            if self.matrix[1][0] == 0:
+                self.matrix[0][0] = self.matrix[0][1]
+                self.matrix[0][1] = 0
+                self.matrix[1][0] = self.matrix[1][1]
+                self.matrix[1][1] = 0
+            elif self.matrix[0][1] == 0:
+                self.matrix[0][0] = self.matrix[1][0]
+                self.matrix[1][0] = 0
+                self.matrix[0][1] = self.matrix[1][1]
+                self.matrix[1][1] = 0
+        
+        
         
     @classmethod
     def drawTriangle( cls, surface, color, type, x, y ):
@@ -67,31 +127,29 @@ class Piece:
         botLeft = (x * 48, (y+1) * 48 - 1)
         botRight = ((x+1) * 48 - 1, (y+1) * 48 - 1)
 
-        if type == 1 or type == 3:
+        if type == 1 or type == 5:
             draw.polygon( surface, color, [topLeft, topRight, botLeft] )
-        if type == 2 or type == 3:
+        if type == 3 or type == 5:
             draw.polygon( surface, color, [topRight, botRight, botLeft] )
-        if type == 4 or type == 6:
+        if type == 2 or type == 6:
             draw.polygon( surface, color, [topLeft, topRight, botRight] )
-        if type == 5 or type == 6:
+        if type == 4 or type == 6:
             draw.polygon( surface, color, [topLeft, botLeft, botRight] )
                     
-        if type in (1, 3, 4, 6):
+        if type in (1, 5, 2, 6):
             draw.line( surface, cBlack, topLeft, topRight )
-        if type in (1, 3, 5, 6):
+        if type in (1, 5, 4, 6):
             draw.line( surface, cBlack, topLeft, botLeft )
-        if type in (1, 2, 3):
+        if type in (1, 3, 5):
             draw.line( surface, cBlack, botLeft, topRight )
-        # if type in (2, 3, 4, 6):
+        # if type in ( 3, 5, 2, 6):
             # draw.line( surface, cBlack, topRight, botRight )
-        # if type in (2, 3, 5, 6):
+        # if type in ( 3, 5, 4, 6):
             # draw.line( surface, cBlack, botLeft, botRight )
-        if type in (4, 5, 6):
+        if type in ( 2, 4, 6):
             draw.line( surface, cBlack, topLeft, botRight )
 
         
-    #0 is empty, 1 is top left triangle, 2 is bottom right triangle, 3 is both,
-    #4 is top right triangle, 5 is bottom left triangle, 6 is both
     def draw( self, surface ):
         for i in range(0, 2):
             for j in range(0, 2):
@@ -131,6 +189,12 @@ def main():
     boardCorner = (24 * 16, 64) 
     boardX, boardY = boardCorner
     
+    #instantiate demo pieces
+    pieces = [None]*8
+    for i in range(0, 8):
+        pieces[i] = Piece( i + 1, (i % 4 ) * 2, int( i/4 ) * 2 )
+    ticks = -1
+    
     while True:
         #get input
         for event in pygame.event.get():
@@ -139,6 +203,7 @@ def main():
         keystate = pygame.key.get_pressed()
         
         screen.fill( Color(0,0,0) )
+        board.fill( Color(0,0,0,0) )
         
         for x in range(1, int( gameWindow.w/16 ) + 1):
             draw.line( screen, cGrid, (x * 16, 0), (x * 16, gameWindow.h) )
@@ -151,8 +216,14 @@ def main():
         for y in range( 1, 12 ):
             draw.line( screen, cGameGrid, (boardX, boardY + y * 48), (boardX + 48 * 8, boardY + y * 48) )
         
+        ticks += 1        
+        if ticks == 30:
+            for i in range(0, 8):
+                pieces[i].rotate()
+            ticks = 0
+        
         for i in range(0, 8):
-            Piece( i + 1, (i % 4 ) * 2, int( i/4 ) * 2 ).draw( board )
+            pieces[i].draw( board )
         
         screen.blit( board, boardCorner )
         
