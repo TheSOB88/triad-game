@@ -128,7 +128,7 @@ def main():
     screen = pygame.display.set_mode( gameWindow.size, winstyle, bestdepth )
     
     board = pygame.Surface( (128 * 3, 192 * 3), pygame.SRCALPHA )    
-    boardCorner = (24 * 16, 64)
+    boardCorner = (24 * 16, 64) 
     boardX, boardY = boardCorner
     
     while True:
