@@ -66,13 +66,13 @@ def main():
     board = pygame.Surface( (128 * 3, 192 * 3), pygame.SRCALPHA )    
     boardCorner = (24 * 16, 64) 
     boardX, boardY = boardCorner
-    global doDemo
     
     if doDemo:
         #instantiate demo pieces
         demoPieces = [None]*8
         for i in range(0, 8):
             demoPieces[i] = Piece( i + 1, (i % 4 ) * 2, int( i/4 ) * 2, colors[i] )
+        
     demoClockwise = True
     ticks = -1
     
