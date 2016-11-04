@@ -165,16 +165,18 @@ class Piece:
         
         #need to support two colors for double-triangle blocks
         if type( color ) != type( (0,0) ):
-            color = ( color, color )
+            color1, color2 = color, color
+        else
+            color1, color2 = color[0], color[1]
 
         if type == 1 or type == 5:
-            draw.polygon( surface, color[0], [topLeft, topRight, botLeft] )
+            draw.polygon( surface, color1, [topLeft, topRight, botLeft] )
         if type == 3 or type == 5:
-            draw.polygon( surface, color[1], [topRight, botRight, botLeft] )
+            draw.polygon( surface, color2, [topRight, botRight, botLeft] )
         if type == 2 or type == 6:
-            draw.polygon( surface, color[0], [topLeft, topRight, botRight] )
+            draw.polygon( surface, color1, [topLeft, topRight, botRight] )
         if type == 4 or type == 6:
-            draw.polygon( surface, color[1], [topLeft, botLeft, botRight] )
+            draw.polygon( surface, color2, [topLeft, botLeft, botRight] )
                     
         if type in (1, 5, 2, 6):
             draw.line( surface, cBlack, topLeft, topRight )

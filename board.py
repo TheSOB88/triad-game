@@ -19,12 +19,25 @@ class Board:
         jCap = 2 if x < 11 else 1
         for i in range(0, iCap):
             for j in range(0, jCap):
-                self.matrix[y][x] = Piece.addTri( piece.matrix[j][i], self.matrix[y+j][x+i] )
+                selfTri = self.matrix[y+j][x+i]
+                pieceTri = piece.matrix[j][i]
+                newTri = Piece.addTri( pieceTri, selfTri )
+                self.matrix[y][x] = newTri
+                if pieceTri == newTri:
+                    colorMatrix[y][x] = piece.color
+                else:
+                    if pieceTri == 1 or pieceTri == 4:
+                        colorMatrix[y][x] = ( piece.color, self.colorMatrix[y][x] )
+                    else:
+                        colorMatrix[y][x] = ( self.colorMatrix[y][x], piece.color )
                 
     def removeLine( self, line ):
         for y in reversed( range( 1, line + 1 ) ):
             for x in range( 0, 8 ):
                 self.matrix[y][x] = self.matrix[y-1][x] 
+                self.colorMatrix[y][x] = self.colorMatrix[y-1][x] 
+        self.matrix[0] = [0]*width
+        self.colorMatrix[0] = [None]*width
         
     #check if there are lines to remove
     def update( self ):
@@ -41,4 +54,5 @@ class Board:
     def draw( self, surface ):
         for y in range( 0, self.height ):
             for x in range( 0, self.width ):
+                Piece.drawTriangle( surface, self.colorMatrix[y][x], self.matrix[y][x], x, y )
                 
