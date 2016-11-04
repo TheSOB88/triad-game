@@ -1,182 +1,49 @@
 #!/usr/bin/env python
-import pygame, os, random, pygame.draw as draw
 
-#import basic pygame modules
+import pygame, os, random, pygame.draw as draw
 from pygame.locals import *
 
+import piece, board
+Piece = piece.Piece
+Board = board.Board
+from gameSettings import *
 
 #see if we can load more than standard BMP
 if not pygame.image.get_extended():
     raise SystemExit( "Sorry, extended image module required" )
     
-cGrid = Color(0x80,0x80,0x80)
-cGameBG = Color(0xF8,0xF8,0xEC)
-cGameGrid = Color(0x40,0x40,0x40)
-cBlack = Color('black')
-colors = \
-  [ Color(0x22,0x10,0x00),
-    Color(0xA0,0x60,0xC0),
-    Color(0xC0,0x80,0x80),
-    Color(0xC0,0xC0,0x68),
-    Color(0x30,0x40,0x34),
-    Color(0x80,0x80,0x7A),
-    Color(0xFF,0xD0,0xC0),
-    Color(0x20,0xA0,0x20) ]
+controls = {}
+for key in ['up', 'down', 'left', 'right', 'a', 'b', 'x', 'y']:
+    controls[key] = False
+keysToControls = {
+    K_UP: 'up',
+    K_DOWN: 'down',
+    K_LEFT: 'left',
+    K_RIGHT: 'right',
+    K_w: 'up',
+    K_s: 'down',
+    K_a: 'left',
+    K_d: 'right',
+    K_SPACE: 'a'
+}
 
-#0 is empty, 1 is top left tri, next 3 are clockwise rotations, 
-#5 is 1+3, 6 is 2+4
-class Piece:
-    matrix = [[0]*2]*2
-    x, y = 0, 0
-    type = None
-    color = cGameGrid
-    def __init__( self, type, x = None, y = None, color = cGameGrid ):
-        self.type = type
-        self.color = color
-        if type == 1:
-            self.matrix = [ [ 4, 0 ],
-                            [ 5, 0 ] ]
-        elif type == 2:
-            self.matrix = [ [ 4, 0 ],
-                            [ 6, 0 ] ]
-        elif type == 3:
-            self.matrix = [ [ 3, 0 ],
-                            [ 5, 0 ] ]
-        elif type == 4:
-            self.matrix = [ [ 3, 0 ],
-                            [ 6, 0 ] ]
-        elif type == 5:
-            self.matrix = [ [ 4, 0 ],
-                            [ 2, 4 ] ]
-        elif type == 6:
-            self.matrix = [ [ 4, 0 ],
-                            [ 2, 1 ] ]
-        elif type == 7:
-            self.matrix = [ [ 3, 0 ],
-                            [ 2, 4 ] ]
-        elif type == 8:
-            self.matrix = [ [ 3, 0 ],
-                            [ 2, 1 ] ]
-        else:
-            Error()
-            
-        if x:
-            self.x = x
-        if y:
-            self.y = y
-        
-    def rotate( self, clockwise = True ):
-        if clockwise:
-            #rotate triangles individually
-            for i in range(0, 2):
-                for j in range(0, 2):
-                    triType = self.matrix[j][i]
-                    if triType in range(1,4):
-                        self.matrix[j][i] = triType + 1
-                    elif triType == 4:
-                        self.matrix[j][i] = 1
-                    elif triType == 5:
-                        self.matrix[j][i] = 6
-                    elif triType == 6:
-                        self.matrix[j][i] = 5
-                    elif triType == 0:
-                        pass
-                    else:
-                        Error()
-            #rotate triangle arrangement
-            temp = self.matrix[0][0]
-            self.matrix[0][0] = self.matrix[1][0]
-            self.matrix[1][0] = self.matrix[1][1]
-            self.matrix[1][1] = self.matrix[0][1]
-            self.matrix[0][1] = temp
-        else:
-            #rotate triangles individually
-            for i in range(0, 2):
-                for j in range(0, 2):
-                    triType = self.matrix[j][i]
-                    if triType in range(2,5):
-                        self.matrix[j][i] = triType - 1
-                    elif triType == 1:
-                        self.matrix[j][i] = 4
-                    elif triType == 5:
-                        self.matrix[j][i] = 6
-                    elif triType == 6:
-                        self.matrix[j][i] = 5
-                    elif triType == 0:
-                        pass
-                    else:
-                        Error()
-            #rotate triangle arrangement
-            temp = self.matrix[0][0]
-            self.matrix[0][0] = self.matrix[0][1]
-            self.matrix[0][1] = self.matrix[1][1]
-            self.matrix[1][1] = self.matrix[1][0]
-            self.matrix[1][0] = temp
-        
-        #move tiles to the top/left
-        if self.matrix[0][0] == 0:
-            if self.matrix[1][0] == 0:
-                self.matrix[0][0] = self.matrix[0][1]
-                self.matrix[0][1] = 0
-                self.matrix[1][0] = self.matrix[1][1]
-                self.matrix[1][1] = 0
-            elif self.matrix[0][1] == 0:
-                self.matrix[0][0] = self.matrix[1][0]
-                self.matrix[1][0] = 0
-                self.matrix[0][1] = self.matrix[1][1]
-                self.matrix[1][1] = 0
-        
-        
-        
-    @classmethod
-    def drawTriangle( cls, surface, color, type, x, y ):
-        if type not in range(1, 7):
-            return
-        #points
-        topLeft = (x * 48, y * 48)
-        topRight = ((x+1) * 48 - 1, y * 48)
-        botLeft = (x * 48, (y+1) * 48 - 1)
-        botRight = ((x+1) * 48 - 1, (y+1) * 48 - 1)
-
-        if type == 1 or type == 5:
-            draw.polygon( surface, color, [topLeft, topRight, botLeft] )
-        if type == 3 or type == 5:
-            draw.polygon( surface, color, [topRight, botRight, botLeft] )
-        if type == 2 or type == 6:
-            draw.polygon( surface, color, [topLeft, topRight, botRight] )
-        if type == 4 or type == 6:
-            draw.polygon( surface, color, [topLeft, botLeft, botRight] )
-                    
-        if type in (1, 5, 2, 6):
-            draw.line( surface, cBlack, topLeft, topRight )
-        if type in (1, 5, 4, 6):
-            draw.line( surface, cBlack, topLeft, botLeft )
-        if type in (1, 3, 5):
-            draw.line( surface, cBlack, botLeft, topRight )
-        # if type in ( 3, 5, 2, 6):
-            # draw.line( surface, cBlack, topRight, botRight )
-        # if type in ( 3, 5, 4, 6):
-            # draw.line( surface, cBlack, botLeft, botRight )
-        if type in ( 2, 4, 6):
-            draw.line( surface, cBlack, topLeft, botRight )
-
-        
-    def draw( self, surface ):
-        for i in range(0, 2):
-            for j in range(0, 2):
-                Piece.drawTriangle( surface, self.color, self.matrix[i][j], self.x + j, self.y + i )
-    
-class Board:
-    matrix = [[0]*12]*8
-    def __init__( self ):
-        pass
-    def addPiece( self ):
-        pass
-    def removeLine( self ):
-        pass
-    #check if there are lines to remove
-    def update( self ):
-        pass
+def processControls():
+    #get input  
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            return "quit"
+        #game buttons
+        if event.type == KEYDOWN:
+            if event.key == K_ESCAPE:
+                return "quit"
+            elif event.key in keysToControls:
+                controls[keysToControls[event.key]] = True
+        elif event.type == KEYUP:
+            if event.key in keysToControls:
+                controls[keysToControls[event.key]] = False
+        #demo buttons
+        if event.type == KEYDOWN and doDemo:
+            return "clock"
 
 def main():
     gameWindow = Rect( 0, 0, 800, 704 )
@@ -199,45 +66,53 @@ def main():
     board = pygame.Surface( (128 * 3, 192 * 3), pygame.SRCALPHA )    
     boardCorner = (24 * 16, 64) 
     boardX, boardY = boardCorner
+    global doDemo
     
-    #instantiate demo pieces
-    demoPieces = [None]*8
-    for i in range(0, 8):
-        demoPieces[i] = Piece( i + 1, (i % 4 ) * 2, int( i/4 ) * 2, colors[i] )
-    ticks = -1
+    if doDemo:
+        #instantiate demo pieces
+        demoPieces = [None]*8
+        for i in range(0, 8):
+            demoPieces[i] = Piece( i + 1, (i % 4 ) * 2, int( i/4 ) * 2, colors[i] )
     demoClockwise = True
+    ticks = -1
     
-    while True:
-        #get input
-        for event in pygame.event.get():
-            if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
-                return
-            elif event.type == KEYDOWN:
-                demoClockwise = not demoClockwise
-        keystate = pygame.key.get_pressed()
-        
+    quitGame = False
+    
+    while not quitGame:
+        controlsReturnVal = processControls()
+        if controlsReturnVal == "quit":
+            quitGame = True
+            print( 'quittin\'' )
+        elif controlsReturnVal == "clock":
+            demoClockwise = not demoClockwise    
+            
         screen.fill( Color(0,0,0) )
         board.fill( Color(0,0,0,0) )
         
-        for x in range(1, int( gameWindow.w/16 ) + 1):
-            draw.line( screen, cGrid, (x * 16, 0), (x * 16, gameWindow.h) )
-        for y in range(1, int( gameWindow.h/16 ) + 1):
-            draw.line( screen, cGrid, (0, y * 16), (gameWindow.w, y * 16) )
+        ticks += 1     
+        
+        if demoGrids:
+            for x in range(1, int( gameWindow.w/16 ) + 1):
+                draw.line( screen, cGrid, (x * 16, 0), (x * 16, gameWindow.h) )
+            for y in range(1, int( gameWindow.h/16 ) + 1):
+                draw.line( screen, cGrid, (0, y * 16), (gameWindow.w, y * 16) )
         draw.rect( screen, cGameBG, (boardCorner,(128 * 3, 192 * 3)) )
         
         for x in range( 1, 8 ):
             draw.line( screen, cGameGrid, (boardX + x * 48, boardY), (boardX + x * 48, boardY +48 * 12) )
         for y in range( 1, 12 ):
             draw.line( screen, cGameGrid, (boardX, boardY + y * 48), (boardX + 48 * 8, boardY + y * 48) )
-        
-        ticks += 1        
-        if ticks == 30:
+           
+        if demoPieces:
+            if ticks == 30:
+                for i in range(0, 8):
+                    demoPieces[i].rotate( demoClockwise )
+                ticks = 0
+            
             for i in range(0, 8):
-                demoPieces[i].rotate( demoClockwise )
-            ticks = 0
-        
-        for i in range(0, 8):
-            demoPieces[i].draw( board )
+                demoPieces[i].draw( board )
+        else:
+            pass
         
         screen.blit( board, boardCorner )
         
