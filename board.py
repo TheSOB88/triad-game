@@ -7,29 +7,41 @@ Piece = piece.Piece
 
 
 class Board:
-    matrix = [[0]*12]*8
-    colorMatrix = [[None]*12]*8
+    matrix = []#[[0]*12]*8
+    colorMatrix = []#[[None]*12]*8
     width, height = 8, 12
     
     def __init__( self ):
-        pass
+        matrix = [None] * self.height
+        colorMatrix = [None] * self.height
+        for j in range(0, self.height):
+            matrix[j] = [0] * self.width
+            colorMatrix[j] = [None] * self.width
+            print( len( matrix[j] ) )
+        print( len( matrix ) )
+        self.matrix = matrix
+        self.colorMatrix = colorMatrix
         
-    def addPiece( self, piece, x, y ):
-        iCap = 2 if x < 7 else 1
-        jCap = 2 if x < 11 else 1
+    def addPiece( self, piece ):
+        print( "adding piece type {0}".format( piece.type ) )
+        iCap = 2 if piece.x < 7 else 1
+        jCap = 2 if piece.y < 11 else 1
         for i in range(0, iCap):
+            x = piece.x + i
             for j in range(0, jCap):
-                selfTri = self.matrix[y+j][x+i]
+                y = piece.y + j
+                print( "y {0} x {1} j {2} i {3}".format( y, x, j, i ) )
+                selfTri = self.matrix[y][x]
                 pieceTri = piece.matrix[j][i]
                 newTri = Piece.addTri( pieceTri, selfTri )
                 self.matrix[y][x] = newTri
                 if pieceTri == newTri:
-                    colorMatrix[y][x] = piece.color
+                    self.colorMatrix[y][x] = piece.color
                 else:
                     if pieceTri == 1 or pieceTri == 4:
-                        colorMatrix[y][x] = ( piece.color, self.colorMatrix[y][x] )
+                        self.colorMatrix[y][x] = ( piece.color, self.colorMatrix[y][x] )
                     else:
-                        colorMatrix[y][x] = ( self.colorMatrix[y][x], piece.color )
+                        self.colorMatrix[y][x] = ( self.colorMatrix[y][x], piece.color )
                 
     def removeLine( self, line ):
         for y in reversed( range( 1, line + 1 ) ):

@@ -63,15 +63,18 @@ def main():
     bestdepth = pygame.display.mode_ok( gameWindow.size, winstyle, 32 )
     screen = pygame.display.set_mode( gameWindow.size, winstyle, bestdepth )
     
-    board = pygame.Surface( (128 * 3, 192 * 3), pygame.SRCALPHA )    
+    boardSurface = pygame.Surface( (128 * 3, 192 * 3), pygame.SRCALPHA )    
     boardCorner = (24 * 16, 64) 
     boardX, boardY = boardCorner
+    board = Board()
     
     if doDemo:
         #instantiate demo pieces
         demoPieces = [None]*8
         for i in range(0, 8):
-            demoPieces[i] = Piece( i + 1, (i % 4 ) * 2, int( i/4 ) * 2, colors[i] )
+            demoPieces[i] = Piece( i + 1, (i % 4 ) * 2, 8 + int( i/4 ) * 2, colors[i] )
+            board.addPiece( demoPieces[i] )
+            demoPieces[i].y -= 8
         
     demoClockwise = True
     ticks = -1
@@ -87,7 +90,7 @@ def main():
             demoClockwise = not demoClockwise    
             
         screen.fill( Color(0,0,0) )
-        board.fill( Color(0,0,0,0) )
+        boardSurface.fill( Color(0,0,0,0) )
         
         ticks += 1     
         
@@ -96,25 +99,28 @@ def main():
                 draw.line( screen, cGrid, (x * 16, 0), (x * 16, gameWindow.h) )
             for y in range(1, int( gameWindow.h/16 ) + 1):
                 draw.line( screen, cGrid, (0, y * 16), (gameWindow.w, y * 16) )
-        draw.rect( screen, cGameBG, (boardCorner,(128 * 3, 192 * 3)) )
         
-        for x in range( 1, 8 ):
-            draw.line( screen, cGameGrid, (boardX + x * 48, boardY), (boardX + x * 48, boardY +48 * 12) )
-        for y in range( 1, 12 ):
-            draw.line( screen, cGameGrid, (boardX, boardY + y * 48), (boardX + 48 * 8, boardY + y * 48) )
+        draw.rect( screen, cGameBG, (boardCorner,(128 * 3, 192 * 3)) )
+        if demoGrids:
+            for x in range( 1, 8 ):
+                draw.line( screen, cGameGrid, (boardX + x * 48, boardY), (boardX + x * 48, boardY +48 * 12) )
+            for y in range( 1, 12 ):
+                draw.line( screen, cGameGrid, (boardX, boardY + y * 48), (boardX + 48 * 8, boardY + y * 48) )
            
-        if demoPieces:
+        board.draw( boardSurface )
+           
+        if doDemo:
             if ticks == 30:
                 for i in range(0, 8):
                     demoPieces[i].rotate( demoClockwise )
                 ticks = 0
             
             for i in range(0, 8):
-                demoPieces[i].draw( board )
+                demoPieces[i].draw( boardSurface )
         else:
             pass
         
-        screen.blit( board, boardCorner )
+        screen.blit( boardSurface, boardCorner )
         
         pygame.display.update()
         #cap the framerate

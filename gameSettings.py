@@ -13,5 +13,5 @@ colors = \
     Color(0xFF,0xD0,0xC0),
     Color(0x20,0xA0,0x20) ]
     
-doDemo = True
+doDemo = False
 demoGrids = True

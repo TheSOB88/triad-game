@@ -12,31 +12,31 @@ class Piece:
     color = None
     rotation = 0
     
-    def __init__( self, type, x = None, y = None, color = Color(0,0,0) ):
-        self.type = type
+    def __init__( self, pieceType, x = None, y = None, color = Color(0,0,0) ):
+        self.type = pieceType
         self.color = color
-        if type == 1:
+        if pieceType == 1:
             self.matrix = [ [ 4, 0 ],
                             [ 5, 0 ] ]
-        elif type == 2:
+        elif pieceType == 2:
             self.matrix = [ [ 4, 0 ],
                             [ 6, 0 ] ]
-        elif type == 3:
+        elif pieceType == 3:
             self.matrix = [ [ 3, 0 ],
                             [ 5, 0 ] ]
-        elif type == 4:
+        elif pieceType == 4:
             self.matrix = [ [ 3, 0 ],
                             [ 6, 0 ] ]
-        elif type == 5:
+        elif pieceType == 5:
             self.matrix = [ [ 4, 0 ],
                             [ 2, 4 ] ]
-        elif type == 6:
+        elif pieceType == 6:
             self.matrix = [ [ 4, 0 ],
                             [ 2, 1 ] ]
-        elif type == 7:
+        elif pieceType == 7:
             self.matrix = [ [ 3, 0 ],
                             [ 2, 4 ] ]
-        elif type == 8:
+        elif pieceType == 8:
             self.matrix = [ [ 3, 0 ],
                             [ 2, 1 ] ]
         else:
@@ -143,6 +143,7 @@ class Piece:
     '''Adds two triangles together'''
     @classmethod
     def addTri( cls, a, b ):
+        print( a, b )
         if a == 0:
             return b
         if b == 0:
@@ -154,8 +155,8 @@ class Piece:
         Error()        
         
     @classmethod
-    def drawTriangle( cls, surface, color, type, x, y ):
-        if type not in range(1, 7):
+    def drawTriangle( cls, surface, color, triType, x, y ):
+        if triType not in range(1, 7):
             return
         #points
         topLeft = (x * 48, y * 48)
@@ -166,29 +167,29 @@ class Piece:
         #need to support two colors for double-triangle blocks
         if type( color ) != type( (0,0) ):
             color1, color2 = color, color
-        else
+        else:
             color1, color2 = color[0], color[1]
 
-        if type == 1 or type == 5:
+        if triType == 1 or triType == 5:
             draw.polygon( surface, color1, [topLeft, topRight, botLeft] )
-        if type == 3 or type == 5:
+        if triType == 3 or triType == 5:
             draw.polygon( surface, color2, [topRight, botRight, botLeft] )
-        if type == 2 or type == 6:
+        if triType == 2 or triType == 6:
             draw.polygon( surface, color1, [topLeft, topRight, botRight] )
-        if type == 4 or type == 6:
+        if triType == 4 or triType == 6:
             draw.polygon( surface, color2, [topLeft, botLeft, botRight] )
                     
-        if type in (1, 5, 2, 6):
+        if triType in (1, 5, 2, 6):
             draw.line( surface, cBlack, topLeft, topRight )
-        if type in (1, 5, 4, 6):
+        if triType in (1, 5, 4, 6):
             draw.line( surface, cBlack, topLeft, botLeft )
-        if type in (1, 3, 5):
+        if triType in (1, 3, 5):
             draw.line( surface, cBlack, botLeft, topRight )
-        # if type in (3, 5, 2, 6):
+        # if triType in (3, 5, 2, 6):
             # draw.line( surface, cBlack, topRight, botRight )
-        # if type in (3, 5, 4, 6):
+        # if triType in (3, 5, 4, 6):
             # draw.line( surface, cBlack, botLeft, botRight )
-        if type in (2, 4, 6):
+        if triType in (2, 4, 6):
             draw.line( surface, cBlack, topLeft, botRight )
 
         
