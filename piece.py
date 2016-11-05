@@ -143,7 +143,6 @@ class Piece:
     '''Adds two triangles together'''
     @classmethod
     def addTri( cls, a, b ):
-        print( a, b )
         if a == 0:
             return b
         if b == 0:

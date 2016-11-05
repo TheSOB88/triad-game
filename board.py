@@ -17,20 +17,16 @@ class Board:
         for j in range(0, self.height):
             matrix[j] = [0] * self.width
             colorMatrix[j] = [None] * self.width
-            print( len( matrix[j] ) )
-        print( len( matrix ) )
         self.matrix = matrix
         self.colorMatrix = colorMatrix
         
     def addPiece( self, piece ):
-        print( "adding piece type {0}".format( piece.type ) )
         iCap = 2 if piece.x < 7 else 1
         jCap = 2 if piece.y < 11 else 1
         for i in range(0, iCap):
             x = piece.x + i
             for j in range(0, jCap):
                 y = piece.y + j
-                print( "y {0} x {1} j {2} i {3}".format( y, x, j, i ) )
                 selfTri = self.matrix[y][x]
                 pieceTri = piece.matrix[j][i]
                 newTri = Piece.addTri( pieceTri, selfTri )
