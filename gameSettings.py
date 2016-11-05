@@ -15,3 +15,5 @@ colors = \
     
 doDemo = False
 demoGrids = True
+
+PIECE_TYPES = 8

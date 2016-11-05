@@ -47,6 +47,11 @@ class Piece:
         if y:
             self.y = y
             
+    def getWidth( self ):
+        return 1 if self.matrix[0][1] == 0 and self.matrix[1][1] == 0 else 2
+            
+    def getHeight( self ):
+        return 1 if self.matrix[1][0] == 0 and self.matrix[1][1] == 0 else 2
         
     def rotate( self, clockwise = True ):
         if clockwise:

@@ -44,6 +44,19 @@ def processControls():
         #demo buttons
         if event.type == KEYDOWN and doDemo:
             return "clock"
+            
+def drawScreenGrid( screen, cGrid, gameWindow ):
+    for x in range(1, int( gameWindow.w/16 ) + 1):
+        draw.line( screen, cGrid, (x * 16, 0), (x * 16, gameWindow.h) )
+    for y in range(1, int( gameWindow.h/16 ) + 1):
+        draw.line( screen, cGrid, (0, y * 16), (gameWindow.w, y * 16) )
+
+def drawBoardGrid( screen, cGameGrid, boardX, boardY ):
+    for x in range( 1, 8 ):
+        draw.line( screen, cGameGrid, (boardX + x * 48, boardY), (boardX + x * 48, boardY +48 * 12) )
+    for y in range( 1, 12 ):
+        draw.line( screen, cGameGrid, (boardX, boardY + y * 48), (boardX + 48 * 8, boardY + y * 48) )
+
 
 def main():
     gameWindow = Rect( 0, 0, 800, 704 )
@@ -75,6 +88,10 @@ def main():
             demoPieces[i] = Piece( i + 1, (i % 4 ) * 2, 8 + int( i/4 ) * 2, colors[i] )
             board.addPiece( demoPieces[i] )
             demoPieces[i].y -= 8
+    else:
+        #instantiate game stuff
+        pieceType = 1
+        currentPiece = None
         
     demoClockwise = True
     ticks = -1
@@ -95,18 +112,10 @@ def main():
         ticks += 1     
         
         if demoGrids:
-            for x in range(1, int( gameWindow.w/16 ) + 1):
-                draw.line( screen, cGrid, (x * 16, 0), (x * 16, gameWindow.h) )
-            for y in range(1, int( gameWindow.h/16 ) + 1):
-                draw.line( screen, cGrid, (0, y * 16), (gameWindow.w, y * 16) )
-        
+            drawScreenGrid( screen, cGrid, gameWindow )
         draw.rect( screen, cGameBG, (boardCorner,(128 * 3, 192 * 3)) )
         if demoGrids:
-            for x in range( 1, 8 ):
-                draw.line( screen, cGameGrid, (boardX + x * 48, boardY), (boardX + x * 48, boardY +48 * 12) )
-            for y in range( 1, 12 ):
-                draw.line( screen, cGameGrid, (boardX, boardY + y * 48), (boardX + 48 * 8, boardY + y * 48) )
-           
+            drawBoardGrid( screen, cGameGrid, boardX, boardY )
         board.draw( boardSurface )
            
         if doDemo:
@@ -117,8 +126,22 @@ def main():
             
             for i in range(0, 8):
                 demoPieces[i].draw( boardSurface )
+        #game logic
         else:
-            pass
+            if ticks == 45:
+                ticks = 0
+                if currentPiece.getHeight() + currentPiece.y < board.height:
+                    currentPiece.y += 1 
+                else:
+                    board.addPiece( currentPiece )
+                    pieceType = pieceType + 1 if pieceType < PIECE_TYPES else 1
+                    currentPiece = None
+                
+            if not currentPiece:
+                currentPiece = Piece( pieceType, 4 if pieceType < 5 else 3, 0, colors[pieceType] )
+                
+            currentPiece.draw( boardSurface )
+                
         
         screen.blit( boardSurface, boardCorner )
         
