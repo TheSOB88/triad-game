@@ -21,8 +21,8 @@ class Board:
         self.colorMatrix = colorMatrix
         
     def addPiece( self, piece ):
-        iCap = 2 if piece.x < 7 else 1
-        jCap = 2 if piece.y < 11 else 1
+        iCap = piece.getWidth() ##2 if piece.x < 7 else 1
+        jCap = piece.getHeight() ##2 if piece.y < 11 else 1
         for i in range(0, iCap):
             x = piece.x + i
             for j in range(0, jCap):
@@ -31,13 +31,30 @@ class Board:
                 pieceTri = piece.matrix[j][i]
                 newTri = Piece.addTri( pieceTri, selfTri )
                 self.matrix[y][x] = newTri
-                if pieceTri == newTri:
+                if pieceTri == newTri and newTri > 0:
                     self.colorMatrix[y][x] = piece.color
                 else:
-                    if pieceTri == 1 or pieceTri == 4:
+                    if pieceTri == 2 or pieceTri == 3:
                         self.colorMatrix[y][x] = ( piece.color, self.colorMatrix[y][x] )
                     else:
                         self.colorMatrix[y][x] = ( self.colorMatrix[y][x], piece.color )
+    
+    '''Check boundaries, reset piece's pos, add piece if necessary.
+       Returns what has been done to the piece'''
+    def checkBoundaries( self, piece ):
+        if piece.x < 0:
+            piece.x = 0
+            print( 'fix x' )
+        elif piece.x + piece.getWidth() > self.width:
+            piece.x = piece.oldX
+            print( 'fix x' )
+        if piece.y + piece.getHeight() > self.height:
+            piece.x = piece.oldX
+            piece.y = piece.oldY
+            print( "add piece" )
+            return True
+        else:
+            return False
                 
     def removeLine( self, line ):
         for y in reversed( range( 1, line + 1 ) ):

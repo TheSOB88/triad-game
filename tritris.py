@@ -12,7 +12,8 @@ from gameSettings import *
 if not pygame.image.get_extended():
     raise SystemExit( "Sorry, extended image module required" )
     
-controls = {}
+controls = {} #hash of which controls are currently held
+newControls = None #array of which controls pressed this frame
 for key in ['up', 'down', 'left', 'right', 'a', 'b', 'x', 'y']:
     controls[key] = False
 keysToControls = {
@@ -27,7 +28,12 @@ keysToControls = {
     K_SPACE: 'a'
 }
 
+globalTicks = -1
+
 def processControls():
+    global newControls, controls, globalTicks
+    
+    newControls = set()#controls pressed this frame
     #get input  
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -37,7 +43,8 @@ def processControls():
             if event.key == K_ESCAPE:
                 return "quit"
             elif event.key in keysToControls:
-                controls[keysToControls[event.key]] = True
+                controls[keysToControls[event.key]] = globalTicks
+                newControls.add( keysToControls[event.key] )
         elif event.type == KEYUP:
             if event.key in keysToControls:
                 controls[keysToControls[event.key]] = False
@@ -92,13 +99,20 @@ def main():
         #instantiate game stuff
         pieceType = 1
         currentPiece = None
+        moveControls = set( ( 'left', 'right', 'down' ) )
+        moveTicks = 0
+        moveDelay = 20
+        gravityTicks = -1
         
     demoClockwise = True
     ticks = -1
+    globalTicks = -1
     
     quitGame = False
     
     while not quitGame:
+        globalTicks += 1
+    
         controlsReturnVal = processControls()
         if controlsReturnVal == "quit":
             quitGame = True
@@ -109,38 +123,74 @@ def main():
         screen.fill( Color(0,0,0) )
         boardSurface.fill( Color(0,0,0,0) )
         
-        ticks += 1     
-        
         if demoGrids:
             drawScreenGrid( screen, cGrid, gameWindow )
         draw.rect( screen, cGameBG, (boardCorner,(128 * 3, 192 * 3)) )
         if demoGrids:
             drawBoardGrid( screen, cGameGrid, boardX, boardY )
-        board.draw( boardSurface )
            
         if doDemo:
+            ticks += 1     
             if ticks == 30:
                 for i in range(0, 8):
                     demoPieces[i].rotate( demoClockwise )
                 ticks = 0
             
+            board.draw( boardSurface )
             for i in range(0, 8):
                 demoPieces[i].draw( boardSurface )
         #game logic
         else:
-            if ticks == 45:
-                ticks = 0
-                if currentPiece.getHeight() + currentPiece.y < board.height:
-                    currentPiece.y += 1 
-                else:
-                    board.addPiece( currentPiece )
-                    pieceType = pieceType + 1 if pieceType < PIECE_TYPES else 1
-                    currentPiece = None
-                
+            #create new piece if none currently
             if not currentPiece:
                 currentPiece = Piece( pieceType, 4 if pieceType < 5 else 3, 0, colors[pieceType] )
+                moveTicks = 0
+                gravityTicks = 0
                 
-            currentPiece.draw( boardSurface )
+            #update timers
+            if len( newControls ) > 0:
+                newDirections = newControls.intersection( moveControls )
+                if len( newDirections ) > 0:
+                    moveTicks = -1
+                    moveDelay = 20
+            moveTicks += 1
+            gravityTicks += 1
+                
+            #check for directional move
+            if ( controls['down'] or controls['left'] or controls['right'] ) and moveTicks == 0:    
+                currentPiece.oldX = currentPiece.x
+                currentPiece.oldY = currentPiece.y
+                moveTicks = moveDelay * -1
+                moveDelay = 8
+                #do move
+                if controls['down']:
+                    currentPiece.y += 1
+                    gravityTicks = 0
+                if controls['left']:
+                    currentPiece.x -= 1 
+                if controls['right']:
+                    currentPiece.x += 1
+            #check for rotate    
+            if controls['a']:
+                currentPiece.rotate()
+            
+            #gravity
+            if gravityTicks == 45:
+                gravityTicks = 0
+                ##pieceMoved = True
+                
+                currentPiece.y += 1 
+                
+            doNewPiece = board.checkBoundaries( currentPiece )
+            if doNewPiece:
+                board.addPiece( currentPiece )
+                pieceType = pieceType + 1 if pieceType < PIECE_TYPES else 1
+                currentPiece = None
+                print( 'get die' )
+                board.draw( boardSurface )
+            else:
+                board.draw( boardSurface )
+                currentPiece.draw( boardSurface )
                 
         
         screen.blit( boardSurface, boardCorner )

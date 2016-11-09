@@ -8,6 +8,7 @@ from gameSettings import *
 class Piece:
     matrix = [[0]*2]*2
     x, y = 0, 0
+    oldX, oldY = 0, 0
     type = None
     color = None
     rotation = 0
