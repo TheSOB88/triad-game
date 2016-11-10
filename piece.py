@@ -148,7 +148,7 @@ class Piece:
            
     '''Adds two triangles together'''
     @classmethod
-    def addTri( cls, a, b ):
+    def addTri( cls, a, b, check = False ):
         if a == 0:
             return b
         if b == 0:
@@ -157,7 +157,7 @@ class Piece:
             return 5
         if (a == 2 and b == 4) or (a == 4 and b == 2):
             return 6
-        return -1        
+        return -1 if check else Error()
         
     @classmethod
     def drawTriangle( cls, surface, color, triType, x, y ):

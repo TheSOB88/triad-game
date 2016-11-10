@@ -99,7 +99,7 @@ def main():
             demoPieces[i].y -= 8
     else:
         #instantiate game stuff
-        pieceType = 1
+        pieceType = 8
         currentPiece = None
         moveControls = set( ( 'left', 'right', 'down' ) )
         moveTicks = 0
@@ -156,8 +156,10 @@ def main():
                     moveDelay = 20
                 if 'rotateR' in newControls:
                     currentPiece.rotate()
+                    board.checkBoundaries( currentPiece )
                 if 'rotateL' in newControls:
                     currentPiece.rotate( False )
+                    board.checkBoundaries( currentPiece )
             moveTicks += 1
             gravityTicks += 1
             
@@ -189,7 +191,6 @@ def main():
                 board.addPiece( currentPiece )
                 pieceType = pieceType + 1 if pieceType < PIECE_TYPES else 1
                 currentPiece = None
-                print( 'get die' )
                 board.draw( boardSurface )
             else:
                 board.draw( boardSurface )

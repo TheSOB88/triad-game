@@ -42,32 +42,46 @@ class Board:
     
     '''Check boundaries, reset piece's pos, add piece if necessary.
        Returns what has been done to the piece'''
-    def checkBoundaries( self, piece ):
+    def checkBoundaries( self, piece, recurse = True ):
         if piece.x < 0:
-            piece.x = 0
-            print( 'fix x' )
+            piece.x = piece.oldX
         elif piece.x + piece.getWidth() > self.width:
             piece.x = piece.oldX
-            print( 'fix x' )
         if piece.y + piece.getHeight() > self.height:
             piece.x = piece.oldX
-            piece.y = piece.oldY
-            print( "add piece" )
+            piece.y -= piece.oldY
             return True
             
         iCap = piece.getWidth() 
         jCap = piece.getHeight()
+        collision = False
+        push = 0
         for i in range(0, iCap):
             x = piece.x + i
             for j in range(0, jCap):
                 y = piece.y + j
                 pieceTri = piece.matrix[j][i]
                 selfTri = self.matrix[y][x]
-                if pieceTri and selfTri and Piece.addTri( pieceTri, selfTri ) == -1:
-                    piece.x = piece.oldX
-                    piece.y = piece.oldY
-                    return True
-                    
+                if pieceTri and selfTri and Piece.addTri( pieceTri, selfTri, True ) == -1:
+                    print( 'invalid addition; collision happened' )
+                    collision = True
+                    if selfTri == 3:
+                        push += -1
+                    if selfTri == 4:
+                        push += 1
+        if not recurse:
+            return collision
+        if collision:
+            newCollision = False
+            if push != 0:
+                piece.x += -1 if push < 0 else 1
+                newCollision = self.checkBoundaries( piece, False )
+                if not newCollision:
+                    return False                    
+            piece.x = piece.oldX
+            if piece.oldY != piece.y:
+                piece.y = piece.oldY
+                return True
         return False
                 
     def removeLine( self, line ):
