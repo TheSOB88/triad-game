@@ -20,6 +20,21 @@ class Board:
         self.matrix = matrix
         self.colorMatrix = colorMatrix
         
+    def rotate( self, piece, clockwise ):
+        piece.rotate( clockwise )
+        ret = self.checkBoundaries( piece )
+        if ret:
+            piece.rotate( not clockwise )
+            piece.x = piece.oldX
+            piece.y = piece.oldY
+                
+        #keep piece in bounds
+        ##TODO: is this needed here? account for size of piece?
+        piece.x = piece.x if piece.x >= 0 else 0
+        piece.x = piece.x if piece.x < self.width else self.width - 1
+        piece.y = piece.y if piece.y >= 0 else 0
+        piece.y = piece.y if piece.y < self.height else self.height - 1
+        
     def addPiece( self, piece ):
         iCap = piece.getWidth() ##2 if piece.x < 7 else 1
         jCap = piece.getHeight() ##2 if piece.y < 11 else 1
@@ -49,7 +64,7 @@ class Board:
             piece.x = piece.oldX
         if piece.y + piece.getHeight() > self.height:
             piece.x = piece.oldX
-            piece.y -= piece.oldY
+            piece.y -= 1
             return True
             
         iCap = piece.getWidth() 
@@ -63,7 +78,6 @@ class Board:
                 pieceTri = piece.matrix[j][i]
                 selfTri = self.matrix[y][x]
                 if pieceTri and selfTri and Piece.addTri( pieceTri, selfTri, True ) == -1:
-                    print( 'invalid addition; collision happened' )
                     collision = True
                     if selfTri == 3:
                         push += -1

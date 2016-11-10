@@ -138,13 +138,6 @@ class Piece:
                 self.matrix[1][0] = 0
                 self.matrix[0][1] = self.matrix[1][1]
                 self.matrix[1][1] = 0
-                
-        #keep piece in bounds
-        ##TODO: move this logic to the board when it's processing input (allow for different sizes)
-        self.x = self.x if self.x >= 0 else 0
-        self.x = self.x if self.x < 8 else 7
-        self.y = self.y if self.y >= 0 else 0
-        self.y = self.y if self.y < 12 else 11
            
     '''Adds two triangles together'''
     @classmethod

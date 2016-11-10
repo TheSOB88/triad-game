@@ -85,7 +85,7 @@ def main():
     bestdepth = pygame.display.mode_ok( gameWindow.size, winstyle, 32 )
     screen = pygame.display.set_mode( gameWindow.size, winstyle, bestdepth )
     
-    boardSurface = pygame.Surface( (128 * 3, 192 * 3), pygame.SRCALPHA )    
+    boardSurface = pygame.Surface( (128 * 3, 192 * 3) ) #, pygame.SRCALPHA )    
     boardCorner = (24 * 16, 64) 
     boardX, boardY = boardCorner
     board = Board()
@@ -155,11 +155,9 @@ def main():
                     moveTicks = -1
                     moveDelay = 20
                 if 'rotateR' in newControls:
-                    currentPiece.rotate()
-                    board.checkBoundaries( currentPiece )
+                    board.rotate( currentPiece, True )
                 if 'rotateL' in newControls:
-                    currentPiece.rotate( False )
-                    board.checkBoundaries( currentPiece )
+                    board.rotate( currentPiece, False )
             moveTicks += 1
             gravityTicks += 1
             
@@ -193,12 +191,32 @@ def main():
                 currentPiece = None
                 board.draw( boardSurface )
             else:
+                if currentPiece.oldX != currentPiece.x or currentPiece.oldY != currentPiece.y:
+                    x, y = currentPiece.x, currentPiece.y
+                    xDelta = ( x - currentPiece.oldX ) * .334
+                    yDelta = ( y - currentPiece.oldY ) * .334
+                    currentPiece.x = currentPiece.oldX + xDelta
+                    currentPiece.y = currentPiece.oldY + yDelta
+                    times = 0
+                    while times < 3:
+                        boardSurface.fill( Color(0,0,0,0) )
+                        board.draw( boardSurface )
+                        currentPiece.draw( boardSurface )
+                        screen.blit( boardSurface, boardCorner )
+                        pygame.display.update()
+                        clock.tick(60)
+                        currentPiece.x += xDelta
+                        currentPiece.y += yDelta
+                        times += 1
+                        
+                currentPiece.x = round( currentPiece.x )
+                currentPiece.y = round( currentPiece.y )
+                        
                 board.draw( boardSurface )
                 currentPiece.draw( boardSurface )
                 
         
         screen.blit( boardSurface, boardCorner )
-        
         pygame.display.update()
         #cap the framerate
         clock.tick(60)
