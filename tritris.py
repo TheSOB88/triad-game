@@ -25,7 +25,9 @@ keysToControls = {
     K_s: 'down',
     K_a: 'left',
     K_d: 'right',
-    K_SPACE: 'a'
+    K_SPACE: 'rotateR',
+    K_LSHIFT: 'rotateL',
+    K_RSHIFT: 'rotateR'
 }
 
 globalTicks = -1
@@ -143,8 +145,7 @@ def main():
         else:
             #create new piece if none currently
             if not currentPiece:
-                currentPiece = Piece( pieceType, 4 if pieceType < 5 else 3, 0, colors[pieceType] )
-                moveTicks = 0
+                currentPiece = Piece( pieceType, 4 if pieceType < 5 else 3, 0, colors[pieceType-1] )
                 gravityTicks = 0
                 
             #update timers
@@ -153,13 +154,18 @@ def main():
                 if len( newDirections ) > 0:
                     moveTicks = -1
                     moveDelay = 20
+                if 'rotateR' in newControls:
+                    currentPiece.rotate()
+                if 'rotateL' in newControls:
+                    currentPiece.rotate( False )
             moveTicks += 1
             gravityTicks += 1
+            
+            currentPiece.oldX = currentPiece.x
+            currentPiece.oldY = currentPiece.y
                 
             #check for directional move
-            if ( controls['down'] or controls['left'] or controls['right'] ) and moveTicks == 0:    
-                currentPiece.oldX = currentPiece.x
-                currentPiece.oldY = currentPiece.y
+            if ( controls['down'] or controls['left'] or controls['right'] ) and moveTicks == 0:
                 moveTicks = moveDelay * -1
                 moveDelay = 8
                 #do move
@@ -170,9 +176,6 @@ def main():
                     currentPiece.x -= 1 
                 if controls['right']:
                     currentPiece.x += 1
-            #check for rotate    
-            if controls['a']:
-                currentPiece.rotate()
             
             #gravity
             if gravityTicks == 45:

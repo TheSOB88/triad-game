@@ -27,17 +27,18 @@ class Board:
             x = piece.x + i
             for j in range(0, jCap):
                 y = piece.y + j
-                selfTri = self.matrix[y][x]
                 pieceTri = piece.matrix[j][i]
-                newTri = Piece.addTri( pieceTri, selfTri )
-                self.matrix[y][x] = newTri
-                if pieceTri == newTri and newTri > 0:
-                    self.colorMatrix[y][x] = piece.color
-                else:
-                    if pieceTri == 2 or pieceTri == 3:
-                        self.colorMatrix[y][x] = ( piece.color, self.colorMatrix[y][x] )
+                if pieceTri:
+                    selfTri = self.matrix[y][x]
+                    newTri = Piece.addTri( pieceTri, selfTri )
+                    self.matrix[y][x] = newTri
+                    if pieceTri == newTri:
+                        self.colorMatrix[y][x] = piece.color
                     else:
-                        self.colorMatrix[y][x] = ( self.colorMatrix[y][x], piece.color )
+                        if pieceTri == 2 or pieceTri == 3:
+                            self.colorMatrix[y][x] = ( self.colorMatrix[y][x], piece.color )
+                        else:
+                            self.colorMatrix[y][x] = ( piece.color, self.colorMatrix[y][x] )
     
     '''Check boundaries, reset piece's pos, add piece if necessary.
        Returns what has been done to the piece'''

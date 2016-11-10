@@ -180,9 +180,9 @@ class Piece:
         if triType == 3 or triType == 5:
             draw.polygon( surface, color2, [topRight, botRight, botLeft] )
         if triType == 2 or triType == 6:
-            draw.polygon( surface, color1, [topLeft, topRight, botRight] )
+            draw.polygon( surface, color2, [topLeft, topRight, botRight] )
         if triType == 4 or triType == 6:
-            draw.polygon( surface, color2, [topLeft, botLeft, botRight] )
+            draw.polygon( surface, color1, [topLeft, botLeft, botRight] )
                     
         if triType in (1, 5, 2, 6):
             draw.line( surface, cBlack, topLeft, topRight )
