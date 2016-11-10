@@ -54,8 +54,21 @@ class Board:
             piece.y = piece.oldY
             print( "add piece" )
             return True
-        else:
-            return False
+            
+        iCap = piece.getWidth() 
+        jCap = piece.getHeight()
+        for i in range(0, iCap):
+            x = piece.x + i
+            for j in range(0, jCap):
+                y = piece.y + j
+                pieceTri = piece.matrix[j][i]
+                selfTri = self.matrix[y][x]
+                if pieceTri and selfTri and Piece.addTri( pieceTri, selfTri ) == -1:
+                    piece.x = piece.oldX
+                    piece.y = piece.oldY
+                    return True
+                    
+        return False
                 
     def removeLine( self, line ):
         for y in reversed( range( 1, line + 1 ) ):

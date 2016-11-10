@@ -157,7 +157,7 @@ class Piece:
             return 5
         if (a == 2 and b == 4) or (a == 4 and b == 2):
             return 6
-        Error()        
+        return -1        
         
     @classmethod
     def drawTriangle( cls, surface, color, triType, x, y ):
