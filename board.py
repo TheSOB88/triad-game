@@ -22,18 +22,20 @@ class Board:
         
     def rotate( self, piece, clockwise ):
         piece.rotate( clockwise )
+        
+        #keep piece in bounds
+        piece.x = piece.x if piece.x >= 0 else 0
+        piece.x = piece.x if piece.x + piece.getWidth() < self.width else self.width - piece.getWidth()
+        piece.y = piece.y if piece.y >= 0 else 0
+        piece.y = piece.y if piece.y + piece.getHeight() < self.height else self.height - piece.getHeight()
+        
         ret = self.checkBoundaries( piece )
         if ret:
             piece.rotate( not clockwise )
             piece.x = piece.oldX
             piece.y = piece.oldY
                 
-        #keep piece in bounds
         ##TODO: is this needed here? account for size of piece?
-        piece.x = piece.x if piece.x >= 0 else 0
-        piece.x = piece.x if piece.x < self.width else self.width - 1
-        piece.y = piece.y if piece.y >= 0 else 0
-        piece.y = piece.y if piece.y < self.height else self.height - 1
         
     def addPiece( self, piece ):
         iCap = piece.getWidth() ##2 if piece.x < 7 else 1
