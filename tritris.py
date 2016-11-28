@@ -61,10 +61,12 @@ def drawScreenGrid( screen, cGrid, gameWindow ):
         draw.line( screen, cGrid, (0, y * 16), (gameWindow.w, y * 16) )
 
 def drawBoardGrid( screen, cGameGrid, boardX, boardY ):
-    for x in range( 1, 8 ):
-        draw.line( screen, cGameGrid, (boardX + x * 48, boardY), (boardX + x * 48, boardY +48 * 12) )
-    for y in range( 1, 12 ):
-        draw.line( screen, cGameGrid, (boardX, boardY + y * 48), (boardX + 48 * 8, boardY + y * 48) )
+    for x in range( 1, BOARD_WIDTH ):
+        draw.line( screen, cGameGrid, (boardX + x * 48, boardY), 
+                (boardX + x * 48, boardY +48 * BOARD_HEIGHT) )
+    for y in range( 1, BOARD_HEIGHT ):
+        draw.line( screen, cGameGrid, (boardX, boardY + y * 48), 
+                (boardX + 48 * BOARD_WIDTH, boardY + y * 48) )
 
 
 def main():
@@ -85,10 +87,10 @@ def main():
     bestdepth = pygame.display.mode_ok( gameWindow.size, winstyle, 32 )
     screen = pygame.display.set_mode( gameWindow.size, winstyle, bestdepth )
     
-    boardSurface = pygame.Surface( (128 * 3, 192 * 3) ) #, pygame.SRCALPHA )    
+    boardSurface = pygame.Surface( (BOARD_WIDTH * 48, BOARD_HEIGHT * 48), pygame.SRCALPHA )
     boardCorner = (24 * 16, 64) 
     boardX, boardY = boardCorner
-    board = Board()
+    board = Board( BOARD_WIDTH, BOARD_HEIGHT )
     
     if doDemo:
         #instantiate demo pieces
@@ -111,6 +113,13 @@ def main():
     globalTicks = -1
     
     quitGame = False
+        
+    gameBG = pygame.Surface( gameWindow.size )
+    if demoGrids:
+        drawScreenGrid( gameBG, cGrid, gameWindow )
+    draw.rect( gameBG, cGameBG, ( boardCorner, (BOARD_WIDTH * 48, BOARD_HEIGHT * 48) ) )
+    if demoGrids:
+        drawBoardGrid( gameBG, cGameGrid, boardX, boardY )
     
     while not quitGame:
         globalTicks += 1
@@ -124,12 +133,6 @@ def main():
             
         screen.fill( Color(0,0,0) )
         boardSurface.fill( Color(0,0,0,0) )
-        
-        if demoGrids:
-            drawScreenGrid( screen, cGrid, gameWindow )
-        draw.rect( screen, cGameBG, (boardCorner,(128 * 3, 192 * 3)) )
-        if demoGrids:
-            drawBoardGrid( screen, cGameGrid, boardX, boardY )
            
         if doDemo:
             ticks += 1     
@@ -199,6 +202,7 @@ def main():
                     currentPiece.y = currentPiece.oldY + yDelta
                     times = 0
                     while times < 3:
+                        screen.blit( gameBG, (0,0) )
                         boardSurface.fill( Color(0,0,0,0) )
                         board.draw( boardSurface )
                         currentPiece.draw( boardSurface )
@@ -215,7 +219,7 @@ def main():
                 board.draw( boardSurface )
                 currentPiece.draw( boardSurface )
                 
-        
+        screen.blit( gameBG, (0,0) )
         screen.blit( boardSurface, boardCorner )
         pygame.display.update()
         #cap the framerate

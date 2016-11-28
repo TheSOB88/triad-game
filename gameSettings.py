@@ -16,4 +16,7 @@ colors = \
 doDemo = False
 demoGrids = True
 
+BOARD_WIDTH = 6
+BOARD_HEIGHT = 9
+
 PIECE_TYPES = 8

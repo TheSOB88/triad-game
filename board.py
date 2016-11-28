@@ -11,7 +11,7 @@ class Board:
     colorMatrix = []#[[None]*12]*8
     width, height = 8, 12
     
-    def __init__( self ):
+    def __init__( self, width = 8, height = 12 ):
         matrix = [None] * self.height
         colorMatrix = [None] * self.height
         for j in range(0, self.height):
@@ -19,6 +19,8 @@ class Board:
             colorMatrix[j] = [None] * self.width
         self.matrix = matrix
         self.colorMatrix = colorMatrix
+        self.width = width
+        self.height = height
         
     def rotate( self, piece, clockwise ):
         piece.rotate( clockwise )
