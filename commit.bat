@@ -1,5 +1,5 @@
-if "%1" == "" {
+if "%1" == "" (
     git commit -a -m "Update"
-} else {
+) else (
     git commit -a -m "%*"
-}
+)
