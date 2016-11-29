@@ -148,7 +148,9 @@ def main():
         else:
             #create new piece if none currently
             if not currentPiece:
-                currentPiece = Piece( pieceType, 4 if pieceType < 5 else 3, 0, colors[pieceType-1] )
+                pieceNewX = round( board.width/2 )
+                pieceNewX -= 1 if pieceType > 4 else 0
+                currentPiece = Piece( pieceType, pieceNewX, 0, colors[pieceType-1] )
                 gravityTicks = 0
                 
             #update timers
@@ -187,8 +189,8 @@ def main():
                 
                 currentPiece.y += 1 
                 
-            doNewPiece = board.checkBoundaries( currentPiece )
-            if doNewPiece:
+            doAddPiece = board.checkBoundaries( currentPiece )
+            if doAddPiece:
                 board.addPiece( currentPiece )
                 pieceType = pieceType + 1 if pieceType < PIECE_TYPES else 1
                 currentPiece = None

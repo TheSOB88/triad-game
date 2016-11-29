@@ -31,8 +31,8 @@ class Board:
         piece.y = piece.y if piece.y >= 0 else 0
         piece.y = piece.y if piece.y + piece.getHeight() < self.height else self.height - piece.getHeight()
         
-        ret = self.checkBoundaries( piece )
-        if ret:
+        boundError = self.checkBoundaries( piece )
+        if boundError:
             piece.rotate( not clockwise )
             piece.x = piece.oldX
             piece.y = piece.oldY
