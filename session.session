@@ -1,0 +1,19 @@
+<NotepadPlus>
+    <Session activeView="1">
+        <mainView activeIndex="0">
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1928" startPos="0" endPos="0" selMode="0" lang="Python" encoding="-1" filename="C:\d\tritris\triad.py" backupFilePath="" originalFileLastModifTimestamp="1499279910" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1928" startPos="0" endPos="0" selMode="0" lang="Python" encoding="-1" filename="C:\d\tritris\board.py" backupFilePath="" originalFileLastModifTimestamp="1480434818" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1928" startPos="0" endPos="0" selMode="0" lang="Python" encoding="-1" filename="C:\d\tritris\piece.py" backupFilePath="" originalFileLastModifTimestamp="1478753404" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1928" startPos="0" endPos="0" selMode="0" lang="Python" encoding="-1" filename="C:\d\tritris\gameSettings.py" backupFilePath="" originalFileLastModifTimestamp="1480361656" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="1928" startPos="0" endPos="0" selMode="0" lang="Normal Text" encoding="-1" filename="C:\d\tritris\tritris.spec" backupFilePath="" originalFileLastModifTimestamp="1480040647" />
+        </mainView>
+        <subView activeIndex="0">
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="856" startPos="0" endPos="0" selMode="0" lang="Python" encoding="-1" filename="C:\d\tritris\triad.py" backupFilePath="" originalFileLastModifTimestamp="1499279910" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="856" startPos="1152" endPos="1152" selMode="0" lang="Python" encoding="-1" filename="C:\d\tritris\board.py" backupFilePath="" originalFileLastModifTimestamp="1480434818" />
+            <File firstVisibleLine="36" xOffset="0" scrollWidth="856" startPos="1648" endPos="1648" selMode="0" lang="Python" encoding="-1" filename="C:\d\tritris\piece.py" backupFilePath="" originalFileLastModifTimestamp="1478753404" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="856" startPos="469" endPos="469" selMode="0" lang="Python" encoding="-1" filename="C:\d\tritris\gameSettings.py" backupFilePath="" originalFileLastModifTimestamp="1480361656" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="856" startPos="1" endPos="1" selMode="0" lang="Batch" encoding="-1" filename="C:\d\tritris\commit.bat" backupFilePath="" originalFileLastModifTimestamp="1480435591" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="856" startPos="182" endPos="182" selMode="0" lang="Normal Text" encoding="-1" filename="C:\d\tritris\todo.txt" backupFilePath="" originalFileLastModifTimestamp="1480435698" />
+        </subView>
+    </Session>
+</NotepadPlus>

@@ -148,6 +148,8 @@ def main():
         else:
             #create new piece if none currently
             if not currentPiece:
+                ##TODO: make the piece random
+            
                 pieceNewX = round( board.width/2 )
                 pieceNewX -= 1 if pieceType > 4 else 0
                 currentPiece = Piece( pieceType, pieceNewX, 0, colors[pieceType-1] )

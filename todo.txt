@@ -1,0 +1,6 @@
+TODO
+
+correct error handling
+make collision logic happen before the move
+fix collision not happenening if triangles can merge
+fix leftrighting into collision means getting stuck
